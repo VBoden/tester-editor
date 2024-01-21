@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
+import javafx.stage.Stage;
 import ua.vboden.tester.entities.Answer;
 import ua.vboden.tester.services.AnswerService;
 import ua.vboden.tester.services.EntityService;
@@ -45,13 +46,13 @@ public class AnswerEditorController extends AbstractEditorController<Answer, Ans
 		setCurrent(selected);
 		this.answers = answers;
 		this.answersTable = answersTable;
-		super.showStage(null);
+		super.showStage((Stage)null);
 		populateFields(getCurrent());
 	}
 
 	public void showStage(List<Answer> answers) throws IOException {
 		this.answers = answers;
-		super.showStage(null);
+		super.showStage((Stage)null);
 	}
 
 	@Override

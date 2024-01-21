@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -49,14 +50,17 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Stage;
 import ua.vboden.tester.components.ListChoiceDialog;
 import ua.vboden.tester.dto.IdString;
 import ua.vboden.tester.dto.TranslationRow;
 import ua.vboden.tester.entities.Category;
+import ua.vboden.tester.entities.Question;
 import ua.vboden.tester.entities.Type;
 import ua.vboden.tester.fxservices.WordSpeakService;
 import ua.vboden.tester.services.CategoryService;
 import ua.vboden.tester.services.EntityService;
+import ua.vboden.tester.services.QuestionService;
 
 @Component
 public class MainWindowController extends AbstractController {
@@ -71,7 +75,7 @@ public class MainWindowController extends AbstractController {
 	private TableView<TranslationRow> mainTable;
 
 	@FXML
-	private ListView<IdString> catDictsList;
+	private ListView<Question> questionsList;
 
 	@FXML
 	private ComboBox<String> catOrDictSelector;
@@ -149,6 +153,10 @@ public class MainWindowController extends AbstractController {
 
 //	@Autowired
 //	private EntryService entryService;
+	
+
+	@Autowired
+	private QuestionService questionService;
 //
 //	@Autowired
 //	private DictionaryService dictionaryService;
@@ -186,7 +194,7 @@ public class MainWindowController extends AbstractController {
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		
+
 		CategoryUtils.fillCategoryView(themes, getSessionService().getCategoryModels());
 		
 		
@@ -196,7 +204,7 @@ public class MainWindowController extends AbstractController {
 //		categoryColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("categories"));
 //		transCategoryColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("transCategories"));
 //		dictionaryColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("dictionaries"));
-//		updateTranslationsView();
+		updateTranslationsView();
 //		catOrDictSelector
 //				.setItems(FXCollections.observableArrayList(getResources().getString("filters.selection.categories"),
 //						getResources().getString("filters.selection.dictionaries")));
@@ -211,14 +219,23 @@ public class MainWindowController extends AbstractController {
 
 	}
 
+	private void updateCategories() {
+		categoryService.loadCategories();
+		CategoryUtils.fillCategoryView(themes, getSessionService().getCategoryModels());
+	}
+
+	private void updateQuestions() {
+		questionService.loadQuestions(getSessionService().getQuestionIds());
+	}
+
 	private void updateTranslationsView() {
-		ObservableList<TranslationRow> translations = getSessionService().getTranslations();
+		ObservableList<Question> translations = getSessionService().getQuestions();
 		updateTranslations(translations);
 //		mainTable.getSelectionModel().select(translations.size() - 1);
 //		mainTable.scrollTo(translations.size());
 	}
 
-	private void updateTranslations(ObservableList<TranslationRow> translations) {
+	private void updateTranslations(ObservableList<Question> translations) {
 //		if (getSessionService().isDisplayDefaultLanguagesOnly()) {
 //			FilteredList<TranslationRow> filtered = new FilteredList<>(translations);
 //			filtered.setPredicate(
@@ -226,24 +243,25 @@ public class MainWindowController extends AbstractController {
 //							.getTranslationLangCode().equals(getSessionService().getDefaultLanguageTo().getCode()));
 //			mainTable.setItems(filtered);
 //		} else {
-		mainTable.setItems(translations);
+		questionsList.setItems(translations);
+//		mainTable.setItems(translations);
 //		}
 //		statusMessage1
 //				.setText(MessageFormat.format(getResources().getString("translations.status"), translations.size()));
 	}
 
 	private void loadCategories() {
-		ObservableList<IdString> categories = getSessionService().getCategoriesWithEmpty();
-		catDictsList.setItems(categories);
-		catDictsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		statusMessage2.setText(MessageFormat.format(getResources().getString("category.status"), categories.size()));
+//		ObservableList<IdString> categories = getSessionService().getCategoriesWithEmpty();
+//		catDictsList.setItems(categories);
+//		catDictsList.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+//		statusMessage2.setText(MessageFormat.format(getResources().getString("category.status"), categories.size()));
 	}
 
 	private void loadDictionaries() {
-		ObservableList<IdString> dictionaries = getSessionService().getDictionariesWithEmpty();
-		catDictsList.setItems(dictionaries);
-		statusMessage3
-				.setText(MessageFormat.format(getResources().getString("dictionary.status"), dictionaries.size()));
+//		ObservableList<IdString> dictionaries = getSessionService().getDictionariesWithEmpty();
+//		catDictsList.setItems(dictionaries);
+//		statusMessage3
+//				.setText(MessageFormat.format(getResources().getString("dictionary.status"), dictionaries.size()));
 	}
 
 	@FXML
@@ -258,14 +276,14 @@ public class MainWindowController extends AbstractController {
 
 	@FXML
 	void doFiltering(ActionEvent event) {
-		ObservableList<IdString> selectedItems = catDictsList.getSelectionModel().getSelectedItems();
-		if (!selectedItems.isEmpty()) {
-
-			List<Integer> selectedIds = selectedItems.stream().map(IdString::getId).collect(Collectors.toList());
-			boolean condition = getResources().getString("filters.selection.and")
-					.equals(conditionSelector.getSelectionModel().getSelectedItem());
-			doFiltering(selectedIds, condition);
-		}
+//		ObservableList<IdString> selectedItems = catDictsList.getSelectionModel().getSelectedItems();
+//		if (!selectedItems.isEmpty()) {
+//
+//			List<Integer> selectedIds = selectedItems.stream().map(IdString::getId).collect(Collectors.toList());
+//			boolean condition = getResources().getString("filters.selection.and")
+//					.equals(conditionSelector.getSelectionModel().getSelectedItem());
+//			doFiltering(selectedIds, condition);
+//		}
 	}
 
 	private void doFiltering(List<Integer> selectedIds, boolean condition) {
@@ -294,10 +312,11 @@ public class MainWindowController extends AbstractController {
 	}
 
 	@FXML
-	void onCatDictMouseClick(MouseEvent event) {
+	void editQuestion(MouseEvent event) throws BeansException, IOException {
 		if (event.getClickCount() == 2) {
-			IdString selectedItem = catDictsList.getSelectionModel().getSelectedItem();
-			doFiltering(Collections.singletonList(selectedItem.getId()), false);
+			Question selectedItem = questionsList.getSelectionModel().getSelectedItem();
+			questionEditorController.getObject().showStage(selectedItem, this::updateQuestions);
+//			doFiltering(Collections.singletonList(selectedItem.getId()), false);
 		}
 	}
 
@@ -332,11 +351,11 @@ public class MainWindowController extends AbstractController {
 //		}
 	}
 
-	private List<TranslationRow> filterDisplayed(Function<TranslationRow, String> getter, String word) {
-		return getSessionService().getTranslations().stream()
-				.filter(row -> getter.apply(row).toLowerCase().contains(word.toLowerCase()))
-				.collect(Collectors.toList());
-	}
+//	private List<TranslationRow> filterDisplayed(Function<TranslationRow, String> getter, String word) {
+//		return getSessionService().getQuestions().stream()
+//				.filter(row -> getter.apply(row).toLowerCase().contains(word.toLowerCase()))
+//				.collect(Collectors.toList());
+//	}
 
 	@FXML
 	void findWordsEnter(KeyEvent event) {
@@ -370,30 +389,30 @@ public class MainWindowController extends AbstractController {
 	}
 
 	private int findPreviousInDisplayed(String word, int index) {
-		Function<TranslationRow, String> getter = getSearchFiledGetter();
-		ObservableList<TranslationRow> translations = getSessionService().getTranslations();
-		if (index < 0) {
-			index = translations.size() - 1;
-		}
-		for (int i = index; i >= 0; i--) {
-			if (getter.apply(translations.get(i)).toLowerCase().contains(word.toLowerCase())) {
-				return i;
-			}
-		}
+//		Function<TranslationRow, String> getter = getSearchFiledGetter();
+//		ObservableList<TranslationRow> translations = getSessionService().getQuestions();
+//		if (index < 0) {
+//			index = translations.size() - 1;
+//		}
+//		for (int i = index; i >= 0; i--) {
+//			if (getter.apply(translations.get(i)).toLowerCase().contains(word.toLowerCase())) {
+//				return i;
+//			}
+//		}
 		return -1;
 	}
 
 	private int findNextInDisplayed(String word, int index) {
-		Function<TranslationRow, String> getter = getSearchFiledGetter();
-		ObservableList<TranslationRow> translations = getSessionService().getTranslations();
-		if (index > translations.size() - 1) {
-			index = 0;
-		}
-		for (int i = index; i < translations.size(); i++) {
-			if (getter.apply(translations.get(i)).toLowerCase().contains(word.toLowerCase())) {
-				return i;
-			}
-		}
+//		Function<TranslationRow, String> getter = getSearchFiledGetter();
+//		ObservableList<TranslationRow> translations = getSessionService().getQuestions();
+//		if (index > translations.size() - 1) {
+//			index = 0;
+//		}
+//		for (int i = index; i < translations.size(); i++) {
+//			if (getter.apply(translations.get(i)).toLowerCase().contains(word.toLowerCase())) {
+//				return i;
+//			}
+//		}
 		return -1;
 	}
 
@@ -409,7 +428,7 @@ public class MainWindowController extends AbstractController {
 
 	@FXML
 	void manageCategories(ActionEvent event) throws IOException {
-		categoryEditorController.getObject().showStage(null);
+		categoryEditorController.getObject().showStage(this::updateCategories);
 	}
 
 	@FXML
@@ -419,7 +438,7 @@ public class MainWindowController extends AbstractController {
 
 	@FXML
 	void manageDictionaryEntries(ActionEvent event) throws IOException {
-		questionEditorController.getObject().showStage(null);
+		questionEditorController.getObject().showStage((Stage)null);
 	}
 
 	@FXML
@@ -695,8 +714,8 @@ public class MainWindowController extends AbstractController {
 	}
 
 	@FXML
-	void reloadTranslations(ActionEvent event) {
-//		entryService.loadTranslations(getSessionService().getTranslationIds());
+	void reloadQuestions(ActionEvent event) {
+		questionService.loadQuestions(getSessionService().getQuestionIds());
 	}
 
 	@FXML

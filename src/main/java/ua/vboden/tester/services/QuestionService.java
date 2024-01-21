@@ -2,6 +2,7 @@ package ua.vboden.tester.services;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
@@ -21,8 +22,8 @@ public class QuestionService implements EntityService<Question, Question> {
 
 	@Autowired
 	private QuestionRepository questionRepository;
-//	@Autowired
-//	private SessionService sessionService;
+	@Autowired
+	private SessionService sessionService;
 
 	@Override
 	public void deleteSelected(ObservableList<? extends Question> selected) {
@@ -44,26 +45,6 @@ public class QuestionService implements EntityService<Question, Question> {
 		questionRepository.saveAll(entities);
 	}
 
-//	public void loadCategories() {
-//		List<IdString> categories = new ArrayList<>();
-//		List<Category> entities = new ArrayList<>();
-//		questionRepository.findAll().forEach(entry -> {
-//			categories.add(new IdString(entry.getId(), entry.getName()));
-//			entities.add(entry);
-//		});
-//		if(entities.isEmpty()) {
-//			ResourceBundle resources = ResourceBundle.getBundle("bundles/localization");
-//			Category entity = new Category();
-//			entity.setName(resources.getString("theme.all"));
-//			questionRepository.save(entity);
-//			entities.add(entity);
-//			categories.add(new IdString(entity.getId(), entity.getName()));
-//		}
-//		Collections.sort(categories);
-//		sessionService.setCategories(categories);
-//		sessionService.setCategoryModels(entities);
-//	}
-
 	public Question findEntity(int id) {
 		return questionRepository.findById(id).get();
 	}
@@ -79,5 +60,29 @@ public class QuestionService implements EntityService<Question, Question> {
 		return questionRepository.findByText(name);
 	}
 
+	public void loadQuestions() {
+		List<Question> allEntries = getAllEntries();
+		sessionService.setQuestions(allEntries);
+		sessionService.setQuestionIds(allEntries.stream().map(entry -> entry.getId()).collect(Collectors.toList()));
+//		sessionService.setWordUsages(new HashMap<>());
+//		for (DictionaryEntry entry : allEntries) {
+//			sessionService.increaseUsages(entry.getWord().getId());
+//			sessionService.increaseUsages(entry.getTranslation().getId());
+//		}
+	}
+
+	public void loadQuestions(List<Integer> ids) {
+		sessionService.setQuestions(getAllById(ids));
+		sessionService.setQuestionIds(ids);
+	}
+
+	public List<Question> getAllById(List<Integer> ids) {
+		List<Question> result = new ArrayList<>();
+		questionRepository.findAllById(ids).forEach(result::add);
+		return result;
+	}
+	private List<Question> getAllEntries() {
+		return (List<Question>) questionRepository.findAll();
+	}
 
 }

@@ -214,7 +214,7 @@
                <children>
                   <HBox prefHeight="37.0" prefWidth="189.0" spacing="5.0">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#reloadTranslations">
+                        <Button mnemonicParsing="false" onAction="#reloadQuestions">
                            <graphic>
                               <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -266,7 +266,7 @@
                         <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
                      </padding>
                   </HBox>
-                  <ListView prefHeight="261.0" prefWidth="675.0" VBox.vgrow="ALWAYS" />
+                  <ListView fx:id="questionsList" onMouseClicked="#editQuestion" prefHeight="261.0" prefWidth="675.0" VBox.vgrow="ALWAYS" />
                   <TableView fx:id="mainTable" editable="true" onMouseClicked="#startEditing" prefHeight="288.0" prefWidth="675.0" VBox.vgrow="ALWAYS">
                     <columns>
                       <TableColumn fx:id="numberColumn" editable="false" maxWidth="100.0" minWidth="50.0" prefWidth="-1.0" text="%translations.table.number" />

@@ -14,15 +14,16 @@ import ua.vboden.tester.dto.IdString;
 import ua.vboden.tester.dto.TranslationRow;
 import ua.vboden.tester.dto.WordData;
 import ua.vboden.tester.entities.Category;
+import ua.vboden.tester.entities.Question;
 
 @Service
 public class SessionService {
 
 	private ResourceBundle resources = ResourceBundle.getBundle("bundles/localization");
 
-	private ObservableList<TranslationRow> translations;
+	private ObservableList<Question> questions;
 
-	private List<Integer> translationIds;
+	private List<Integer> questionIds;
 
 	private ObservableList<CodeString> languages;
 
@@ -70,26 +71,26 @@ public class SessionService {
 		}
 	}
 
-	public ObservableList<TranslationRow> getTranslations() {
-		return translations;
+	public ObservableList<Question> getQuestions() {
+		return questions;
 	}
 
-	public void setTranslations(List<TranslationRow> translations) {
-		translations.sort(TranslationRow.lastFirstComparator());
-		if (this.translations == null) {
-			this.translations = FXCollections.observableArrayList(translations);
+	public void setQuestions(List<Question> questions) {
+//		translations.sort(TranslationRow.lastFirstComparator());
+		if (this.questions == null) {
+			this.questions = FXCollections.observableArrayList(questions);
 		} else {
-			this.translations.clear();
-			this.translations.addAll(translations);
+			this.questions.clear();
+			this.questions.addAll(questions);
 		}
 	}
 
-	public List<Integer> getTranslationIds() {
-		return translationIds;
+	public List<Integer> getQuestionIds() {
+		return questionIds;
 	}
 
-	public void setTranslationIds(List<Integer> translationIds) {
-		this.translationIds = translationIds;
+	public void setQuestionIds(List<Integer> questionIds) {
+		this.questionIds = questionIds;
 	}
 
 	public ObservableList<IdString> getCategoriesWithEmpty() {

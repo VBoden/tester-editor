@@ -47,6 +47,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
 @Component
 @Scope(value = "prototype")
@@ -124,9 +125,10 @@ public class QuestionEditorController extends AbstractEditorController<Question,
 		answersTable.setItems(answerItems);
 	}
 
-	public void showStage(Object object, Question selected) throws IOException {
+	public void showStage(Question selected, Runnable refresher) throws IOException {
 		setCurrent(selected);
-		super.showStage(null);
+		super.showStage(refresher);
+		populateFields(getCurrent());
 	}
 
 	@Override
@@ -233,24 +235,4 @@ public class QuestionEditorController extends AbstractEditorController<Question,
 	void addAnswer(MouseEvent event) throws IOException {
 		answerEditorController.getObject().showStage(answerItems);
 	}
-//
-//    @FXML
-//    void cleanFields(ActionEvent event) {
-//
-//    }
-//
-//    @FXML
-//    void close(ActionEvent event) {
-//
-//    }
-//
-//    @FXML
-//    void save(ActionEvent event) {
-//
-//    }
-//
-//    @FXML
-//    void saveNew(ActionEvent event) {
-//
-//    }
 }

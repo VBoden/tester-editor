@@ -1,5 +1,6 @@
 package ua.vboden.tester.controllers;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +17,14 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 import ua.vboden.tester.services.EntityService;
 
 public abstract class AbstractEditorController<T, E> extends AbstractController {
 
 	private T current;
+
+	private Runnable refresher;
 
 	protected abstract void initView();
 
@@ -37,6 +41,15 @@ public abstract class AbstractEditorController<T, E> extends AbstractController 
 	protected abstract String checkFilledFields();
 
 	protected abstract void populateFields(T current);
+
+	public void showStage(Stage stage) throws IOException {
+		super.showStage(stage);
+	}
+
+	public void showStage(Runnable refresher) throws IOException {
+		this.refresher = refresher;
+		super.showStage(null);
+	}
 
 	protected ObservableList<T> getSelected() {
 		return getTable().getSelectionModel().getSelectedItems();
@@ -77,6 +90,9 @@ public abstract class AbstractEditorController<T, E> extends AbstractController 
 		if (alert.getResult() == ButtonType.YES) {
 			getService().deleteSelected(forDelete);
 			initView();
+			if (refresher != null) {
+				refresher.run();
+			}
 		}
 	}
 
@@ -130,6 +146,9 @@ public abstract class AbstractEditorController<T, E> extends AbstractController 
 		getService().save(entity);
 		resetEditionGlobal();
 		initView();
+		if (refresher != null) {
+			refresher.run();
+		}
 	}
 
 	protected void resetEditionGlobal() {

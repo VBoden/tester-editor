@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import ua.vboden.tester.services.CategoryService;
+import ua.vboden.tester.services.QuestionService;
 
 //import ua.vboden.services.DictionaryService;
 //import ua.vboden.services.EntryService;
@@ -21,6 +22,9 @@ public class AppContextInitializer {
 
 	@Autowired
 	private CategoryService categoryService;
+
+	@Autowired
+	private QuestionService questionService;
 //
 //	@Autowired
 //	private LanguageService languageService;
@@ -33,7 +37,7 @@ public class AppContextInitializer {
 //		dictionaryService.loadData();
 //		languageService.loadLanguages();
 //		preferencesService.loadPreferences();
-//		entryService.loadTranslations();
+		questionService.loadQuestions();
 	}
 
 }

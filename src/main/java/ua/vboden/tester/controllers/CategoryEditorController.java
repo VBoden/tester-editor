@@ -1,5 +1,6 @@
 package ua.vboden.tester.controllers;
 
+import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +63,15 @@ public class CategoryEditorController extends AbstractEditorController<IdString,
 	@Autowired
 	private CategoryService categoryService;
 
+//	private Runnable refresher;
+
 	Map<Category, TreeItem<Category>> nodes = new HashMap<>();
+
+
+//	public void showStage(Runnable refresher) throws IOException {
+//		this.refresher = refresher;
+//		super.showStage(null);
+//	}
 
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -96,6 +106,9 @@ public class CategoryEditorController extends AbstractEditorController<IdString,
 	protected void resetEditing() {
 		categoryName.setText("");
 		themesTree.getSelectionModel().clearSelection();
+//		if (refresher != null) {
+//			refresher.run();
+//		}
 	}
 
 	@Override
@@ -169,4 +182,5 @@ public class CategoryEditorController extends AbstractEditorController<IdString,
 	protected TableView<IdString> getTable() {
 		return null;
 	}
+
 }
