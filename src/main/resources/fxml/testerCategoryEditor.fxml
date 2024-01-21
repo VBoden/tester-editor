@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TreeView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="480.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <SplitPane dividerPositions="0.42819555092106915" VBox.vgrow="ALWAYS">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="422.0" prefWidth="276.0">
+               <children>
+                  <ListView fx:id="categoriesList" layoutX="14.0" layoutY="14.0" onMouseClicked="#startEditing" prefHeight="422.0" prefWidth="389.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="406.0" prefWidth="472.0">
+               <children>
+                  <Button fx:id="removeCategory" layoutX="15.0" layoutY="26.0" mnemonicParsing="false" onAction="#removeSelected" text="%removeSelected" AnchorPane.leftAnchor="15.0" />
+                  <Label layoutX="24.0" layoutY="115.0" text="%category.name" AnchorPane.leftAnchor="24.0" AnchorPane.topAnchor="75.0" />
+                  <TextField fx:id="categoryName" layoutX="15.0" layoutY="139.0" onKeyPressed="#saveEnter" prefHeight="24.0" prefWidth="248.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="99.0" />
+                  <Button fx:id="saveCategory" layoutX="15.0" layoutY="179.0" mnemonicParsing="false" onAction="#save" text="%save" AnchorPane.bottomAnchor="70.0" AnchorPane.leftAnchor="15.0" />
+                  <Button fx:id="saveAsNewCategory" layoutX="116.0" layoutY="180.0" mnemonicParsing="false" onAction="#saveNew" text="%saveAsNew" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="15.0" />
+                  <Button fx:id="cleanFields" layoutX="14.0" layoutY="417.0" mnemonicParsing="false" onAction="#cleanFields" text="%cleanFields" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="15.0" />
+                  <Button fx:id="closeButton" layoutX="208.0" layoutY="384.0" mnemonicParsing="false" onAction="#close" text="%close" AnchorPane.bottomAnchor="15.0" AnchorPane.rightAnchor="15.0" />
+                  <TreeView fx:id="themesTree" layoutX="14.0" layoutY="158.0" prefHeight="182.0" prefWidth="333.0" AnchorPane.bottomAnchor="112.00184000792348" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="158.0" />
+                  <Label layoutX="21.0" layoutY="132.0" text="Label" AnchorPane.leftAnchor="24.0" AnchorPane.topAnchor="134.0" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+      <HBox alignment="CENTER_LEFT" spacing="5.0" VBox.vgrow="NEVER">
+         <padding>
+            <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+         </padding>
+         <children>
+            <Label fx:id="statusMessage" text="%category.status" />
+         </children>
+      </HBox>
+   </children>
+</VBox>
