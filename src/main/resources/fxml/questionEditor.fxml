@@ -22,14 +22,14 @@
                         <Label layoutX="24.0" layoutY="280.0" text="%question.answers" AnchorPane.leftAnchor="24.0" />
                         <TableView fx:id="answersTable" layoutX="15.0" layoutY="307.0" onMouseClicked="#answersClicked" prefHeight="159.0" prefWidth="744.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="15.0" AnchorPane.rightAnchor="154.0" AnchorPane.topAnchor="307.0">
                            <columns>
-                              <TableColumn fx:id="answerTextColumn" prefWidth="75.0" text="%answer.text" />
-                              <TableColumn fx:id="correctAnswerColumn" prefWidth="25.0" text="%answer.correct" />
+                              <TableColumn fx:id="answerTextColumn" text="%answer.text" />
+                              <TableColumn fx:id="correctAnswerColumn" prefWidth="10.0" text="%answer.correct" />
                            </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                            </columnResizePolicy>
                         </TableView>
-                        <Button layoutX="782.0" layoutY="297.0" mnemonicParsing="false" prefHeight="52.0" prefWidth="105.0" text="%answer.add" AnchorPane.rightAnchor="25.505502986660076" AnchorPane.topAnchor="297.0" />
+                        <Button layoutX="782.0" layoutY="297.0" mnemonicParsing="false" onMouseClicked="#addAnswer" prefHeight="52.0" prefWidth="105.0" text="%answer.add" AnchorPane.rightAnchor="25.505502986660076" AnchorPane.topAnchor="297.0" />
                         <Label layoutX="24.0" layoutY="153.0" text="%question.category" AnchorPane.leftAnchor="24.0" AnchorPane.topAnchor="135.0" />
                         <TreeView fx:id="themesTree" layoutX="14.0" layoutY="171.0" prefHeight="109.0" prefWidth="884.0" AnchorPane.leftAnchor="14.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="160.0" />
                      </children>

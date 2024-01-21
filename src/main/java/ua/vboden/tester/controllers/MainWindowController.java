@@ -131,10 +131,10 @@ public class MainWindowController extends AbstractController {
 
 //	@Autowired
 //	private ObjectFactory<DictionaryEditorController> dictionaryEditorController;
-//
-//	@Autowired
-//	private ObjectFactory<DictionaryEntryEditorController> dictionaryEntryEditorController;
-//
+
+	@Autowired
+	private ObjectFactory<QuestionEditorController> questionEditorController;
+
 //	@Autowired
 //	private ObjectFactory<WordEditorController> wordEditorController;
 //
@@ -419,17 +419,7 @@ public class MainWindowController extends AbstractController {
 
 	@FXML
 	void manageDictionaryEntries(ActionEvent event) throws IOException {
-//		dictionaryEntryEditorController.getObject().showStage(null);
-	}
-
-	@FXML
-	void manageWords(ActionEvent event) throws IOException {
-//		wordEditorController.getObject().showStage(null);
-	}
-
-	@FXML
-	void manageLanguages(ActionEvent event) throws IOException {
-//		languageEditorController.getObject().showStage(null);
+		questionEditorController.getObject().showStage(null);
 	}
 
 	@FXML
@@ -442,7 +432,7 @@ public class MainWindowController extends AbstractController {
 	void startEditing(MouseEvent event) throws IOException {
 		if (event.getClickCount() == 2) {
 			TranslationRow selected = mainTable.getSelectionModel().getSelectedItem();
-//			dictionaryEntryEditorController.getObject().showStage(null, selected);
+//			questionEditorController.getObject().showStage(null, selected);
 		}
 	}
 

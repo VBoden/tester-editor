@@ -95,6 +95,7 @@ public class CategoryEditorController extends AbstractEditorController<IdString,
 	@Override
 	protected void resetEditing() {
 		categoryName.setText("");
+		themesTree.getSelectionModel().clearSelection();
 	}
 
 	@Override
