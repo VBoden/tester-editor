@@ -67,7 +67,6 @@ public class CategoryEditorController extends AbstractEditorController<IdString,
 
 	Map<Category, TreeItem<Category>> nodes = new HashMap<>();
 
-
 //	public void showStage(Runnable refresher) throws IOException {
 //		this.refresher = refresher;
 //		super.showStage(null);
@@ -90,7 +89,6 @@ public class CategoryEditorController extends AbstractEditorController<IdString,
 
 		statusMessage.setText(MessageFormat.format(getResources().getString("category.status"), categories.size()));
 	}
-
 
 	@Override
 	String getFXML() {
@@ -128,6 +126,11 @@ public class CategoryEditorController extends AbstractEditorController<IdString,
 		TreeItem<Category> selectedItem = themesTree.getSelectionModel().getSelectedItem();
 		if (selectedItem != null) {
 			entity.setSupperCategory(selectedItem.getValue());
+		} else {
+			Category rootCategory = themesTree.getRoot().getValue();
+			if (!rootCategory.equals(entity)) {
+				entity.setSupperCategory(rootCategory);
+			}
 		}
 	}
 
@@ -173,7 +176,7 @@ public class CategoryEditorController extends AbstractEditorController<IdString,
 		Category currentEntity = getCategoryById(current.getId()).get();
 		if (currentEntity.getSupperCategory() != null) {
 			themesTree.getSelectionModel().select(nodes.get(currentEntity.getSupperCategory()));
-		}else {
+		} else {
 			themesTree.getSelectionModel().clearSelection();
 		}
 	}

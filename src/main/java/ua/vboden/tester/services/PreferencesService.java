@@ -34,7 +34,7 @@ public class PreferencesService {
 	private Preferences preferences;
 
 	public static Preferences getPreferences() {
-		return Preferences.userRoot().node("lingvist.fxeditor");
+		return Preferences.userRoot().node("tester.fxeditor");
 	}
 
 	public static void setLastDB(String dbFile) {
