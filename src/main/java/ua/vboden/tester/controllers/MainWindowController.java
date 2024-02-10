@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -44,6 +46,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -54,6 +57,7 @@ import javafx.stage.Stage;
 import ua.vboden.tester.components.ListChoiceDialog;
 import ua.vboden.tester.dto.IdString;
 import ua.vboden.tester.dto.TranslationRow;
+import ua.vboden.tester.entities.Answer;
 import ua.vboden.tester.entities.Category;
 import ua.vboden.tester.entities.Question;
 import ua.vboden.tester.entities.Type;
@@ -124,11 +128,18 @@ public class MainWindowController extends AbstractController {
 
 	@FXML
 	private TableColumn<TranslationRow, String> dictionaryColumn;
-	
 
+	@FXML
+	private TableColumn<Answer, String> answerTextColumn;
+
+	@FXML
+	private TableView<Answer> answersTable;
+
+	@FXML
+	private TableColumn<Answer, Boolean> correctAnswerColumn;
 
     @FXML
-    private TreeView<Category> themes;
+    private TreeView<Category> chapters;
 
 	@Autowired
 	private ObjectFactory<CategoryEditorController> categoryEditorController;
@@ -182,6 +193,8 @@ public class MainWindowController extends AbstractController {
 
 	private int searchIndex;
 
+	private ObservableList<Answer> answerItems;
+
 	@Override
 	String getFXML() {
 		return "/fxml/testerMain.fxml";
@@ -195,16 +208,29 @@ public class MainWindowController extends AbstractController {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 
-		CategoryUtils.fillCategoryView(themes, getSessionService().getCategoryModels());
+		CategoryUtils.fillCategoryView(chapters, getSessionService().getCategoryModels());
 		
-		
+		answerTextColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));		
+		correctAnswerColumn.setCellFactory(col -> {
+            CheckBoxTableCell<Answer, Boolean> cell = new CheckBoxTableCell<>(index -> {
+                BooleanProperty active = new SimpleBooleanProperty(answersTable.getItems().get(index).isCorrect());
+                active.addListener((obs, wasActive, isNowActive) -> {
+                	Answer item = answersTable.getItems().get(index);
+                    item.setCorrect(isNowActive);
+                });
+                return active ;
+            });
+            return cell ;
+        });
+		answerItems = FXCollections.observableArrayList(new ArrayList<>());
+		answersTable.setItems(answerItems);
 //		numberColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, Integer>("number"));
 //		wordColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("word"));
 //		translationColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("translation"));
 //		categoryColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("categories"));
 //		transCategoryColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("transCategories"));
 //		dictionaryColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("dictionaries"));
-		updateTranslationsView();
+		updateQuestionsView();
 //		catOrDictSelector
 //				.setItems(FXCollections.observableArrayList(getResources().getString("filters.selection.categories"),
 //						getResources().getString("filters.selection.dictionaries")));
@@ -221,21 +247,21 @@ public class MainWindowController extends AbstractController {
 
 	private void updateCategories() {
 		categoryService.loadCategories();
-		CategoryUtils.fillCategoryView(themes, getSessionService().getCategoryModels());
+		CategoryUtils.fillCategoryView(chapters, getSessionService().getCategoryModels());
 	}
 
 	private void updateQuestions() {
 		questionService.loadQuestions(getSessionService().getQuestionIds());
 	}
 
-	private void updateTranslationsView() {
-		ObservableList<Question> translations = getSessionService().getQuestions();
-		updateTranslations(translations);
+	private void updateQuestionsView() {
+		ObservableList<Question> questions = getSessionService().getQuestions();
+		updateTranslations(questions);
 //		mainTable.getSelectionModel().select(translations.size() - 1);
 //		mainTable.scrollTo(translations.size());
 	}
 
-	private void updateTranslations(ObservableList<Question> translations) {
+	private void updateTranslations(ObservableList<Question> questions) {
 //		if (getSessionService().isDisplayDefaultLanguagesOnly()) {
 //			FilteredList<TranslationRow> filtered = new FilteredList<>(translations);
 //			filtered.setPredicate(
@@ -243,7 +269,7 @@ public class MainWindowController extends AbstractController {
 //							.getTranslationLangCode().equals(getSessionService().getDefaultLanguageTo().getCode()));
 //			mainTable.setItems(filtered);
 //		} else {
-		questionsList.setItems(translations);
+		questionsList.setItems(questions);
 //		mainTable.setItems(translations);
 //		}
 //		statusMessage1
@@ -317,6 +343,10 @@ public class MainWindowController extends AbstractController {
 			Question selectedItem = questionsList.getSelectionModel().getSelectedItem();
 			questionEditorController.getObject().showStage(selectedItem, this::updateQuestions);
 //			doFiltering(Collections.singletonList(selectedItem.getId()), false);
+		} else if (event.getClickCount() == 1) {
+			Question selectedItem = questionsList.getSelectionModel().getSelectedItem();
+			answerItems.clear();
+			answerItems.addAll(selectedItem.getAnswers());
 		}
 	}
 
@@ -502,7 +532,7 @@ public class MainWindowController extends AbstractController {
 				}
 				service.saveAll(entities);
 //				entryService.loadTranslations(getSessionService().getTranslationIds());
-				updateTranslationsView();
+				updateQuestionsView();
 			}
 		}
 		return selectedEntries;
