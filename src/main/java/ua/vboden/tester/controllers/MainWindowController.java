@@ -25,6 +25,8 @@ import org.springframework.stereotype.Component;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -138,8 +140,8 @@ public class MainWindowController extends AbstractController {
 	@FXML
 	private TableColumn<Answer, Boolean> correctAnswerColumn;
 
-    @FXML
-    private TreeView<Category> chapters;
+	@FXML
+	private TreeView<Category> chapters;
 
 	@Autowired
 	private ObjectFactory<CategoryEditorController> categoryEditorController;
@@ -164,7 +166,6 @@ public class MainWindowController extends AbstractController {
 
 //	@Autowired
 //	private EntryService entryService;
-	
 
 	@Autowired
 	private QuestionService questionService;
@@ -209,19 +210,58 @@ public class MainWindowController extends AbstractController {
 	public void initialize(URL location, ResourceBundle resources) {
 
 		CategoryUtils.fillCategoryView(chapters, getSessionService().getCategoryModels());
-		
-		answerTextColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));		
+
+		chapters.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<Category>>() {
+
+//		        @Override
+//		        public void changed(ObservableValue<Category> observable, Category oldValue,
+//		        		Category newValue) {
+//
+//		            TreeItem<Category> selectedItem = (TreeItem<Category>) newValue;
+//		            System.out.println("Selected Text : " + selectedItem.getValue());
+//		            // do what ever you want 
+//		        }
+
+			@Override
+			public void changed(ObservableValue<? extends TreeItem<Category>> observable, TreeItem<Category> oldValue,
+					TreeItem<Category> newValue) {
+				TreeItem<Category> selectedItem = (TreeItem<Category>) newValue;
+				Category selected = selectedItem.getValue();
+				if (selected != null) {
+					System.out.println("Selected Text : " + selected);
+					answerItems.clear();
+//		            updateQuestionsView();
+					List<Integer> ids = new ArrayList<>();
+					ids.add(selected.getId());
+					addSubIds(selectedItem, ids);
+					getSessionService().setQuestions(questionService.getAllByCategoryIds(ids));
+//					getSessionService().setQuestions(questionService.getAllByCategoryId(selected.getId()));
+//		    		updateTranslations();
+					updateQuestionsView();
+				}
+			}
+
+			private void addSubIds(TreeItem<Category> selectedItem, List<Integer> ids) {
+				ids.add(selectedItem.getValue().getId());
+				for (TreeItem<Category> child : selectedItem.getChildren()) {
+					addSubIds(child, ids);
+				}
+			}
+
+		});
+
+		answerTextColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));
 		correctAnswerColumn.setCellFactory(col -> {
-            CheckBoxTableCell<Answer, Boolean> cell = new CheckBoxTableCell<>(index -> {
-                BooleanProperty active = new SimpleBooleanProperty(answersTable.getItems().get(index).isCorrect());
-                active.addListener((obs, wasActive, isNowActive) -> {
-                	Answer item = answersTable.getItems().get(index);
-                    item.setCorrect(isNowActive);
-                });
-                return active ;
-            });
-            return cell ;
-        });
+			CheckBoxTableCell<Answer, Boolean> cell = new CheckBoxTableCell<>(index -> {
+				BooleanProperty active = new SimpleBooleanProperty(answersTable.getItems().get(index).isCorrect());
+				active.addListener((obs, wasActive, isNowActive) -> {
+					Answer item = answersTable.getItems().get(index);
+					item.setCorrect(isNowActive);
+				});
+				return active;
+			});
+			return cell;
+		});
 		answerItems = FXCollections.observableArrayList(new ArrayList<>());
 		answersTable.setItems(answerItems);
 //		numberColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, Integer>("number"));
@@ -468,7 +508,7 @@ public class MainWindowController extends AbstractController {
 
 	@FXML
 	void manageDictionaryEntries(ActionEvent event) throws IOException {
-		questionEditorController.getObject().showStage((Stage)null);
+		questionEditorController.getObject().showStage((Stage) null);
 	}
 
 	@FXML

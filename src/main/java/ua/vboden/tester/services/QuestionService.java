@@ -81,6 +81,19 @@ public class QuestionService implements EntityService<Question, Question> {
 		questionRepository.findAllById(ids).forEach(result::add);
 		return result;
 	}
+
+	public List<Question> getAllByCategoryId(Integer categoryId) {
+		List<Question> result = new ArrayList<>();
+		questionRepository.findByCategoriesId(categoryId).forEach(result::add);
+		return result;
+	}
+
+	public List<Question> getAllByCategoryIds(List<Integer> categoryIds) {
+		List<Question> result = new ArrayList<>();
+		questionRepository.findByCategoriesIdIn(categoryIds).forEach(result::add);
+		return result;
+	}
+
 	private List<Question> getAllEntries() {
 		return (List<Question>) questionRepository.findAll();
 	}
