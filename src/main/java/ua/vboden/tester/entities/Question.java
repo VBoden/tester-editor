@@ -3,6 +3,7 @@ package ua.vboden.tester.entities;
 import java.util.List;
 import java.util.Objects;
 
+import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -32,6 +33,7 @@ public class Question {
 
 	@OneToMany(fetch = FetchType.EAGER)
 	@Fetch(FetchMode.SUBSELECT)
+	@Cascade({ org.hibernate.annotations.CascadeType.DELETE_ORPHAN })
 	private List<Answer> answers;
 
 	@ManyToMany(fetch = FetchType.EAGER)

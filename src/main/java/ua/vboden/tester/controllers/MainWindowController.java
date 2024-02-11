@@ -188,10 +188,6 @@ public class MainWindowController extends AbstractController {
 //	@Autowired
 //	private ImportService importService;
 
-	private boolean filtered;
-
-	private String selectedCatOrDictName;
-
 	private int searchIndex;
 
 	private ObservableList<Answer> answerItems;
@@ -212,46 +208,24 @@ public class MainWindowController extends AbstractController {
 		CategoryUtils.fillCategoryView(chapters, getSessionService().getCategoryModels());
 
 		chapters.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<Category>>() {
-
-//		        @Override
-//		        public void changed(ObservableValue<Category> observable, Category oldValue,
-//		        		Category newValue) {
-//
-//		            TreeItem<Category> selectedItem = (TreeItem<Category>) newValue;
-//		            System.out.println("Selected Text : " + selectedItem.getValue());
-//		            // do what ever you want 
-//		        }
-
 			@Override
 			public void changed(ObservableValue<? extends TreeItem<Category>> observable, TreeItem<Category> oldValue,
 					TreeItem<Category> newValue) {
 				TreeItem<Category> selectedItem = (TreeItem<Category>) newValue;
 				Category selected = selectedItem.getValue();
-				if (selected != null) {
-					System.out.println("Selected Text : " + selected);
-					answerItems.clear();
-//		            updateQuestionsView();
-					if (inSubChaptersCheck.isSelected()) {
-						List<Integer> ids = new ArrayList<>();
-						addSubIds(selectedItem, ids);
-						getSessionService().setQuestions(questionService.getAllByCategoryIds(ids));
-					} else {
-						getSessionService().setQuestions(questionService.getAllByCategoryId(selected.getId()));
-					}
-//		    		updateTranslations();
-					updateQuestionsView();
-				}
+				updateQuestionsList(selectedItem, selected);
 			}
-
-			private void addSubIds(TreeItem<Category> selectedItem, List<Integer> ids) {
-				ids.add(selectedItem.getValue().getId());
-				for (TreeItem<Category> child : selectedItem.getChildren()) {
-					addSubIds(child, ids);
-				}
-			}
-
 		});
-
+		inSubChaptersCheck.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				TreeItem<Category> selectedItem = chapters.getSelectionModel().getSelectedItem();
+				if (selectedItem != null) {
+					Category selected = selectedItem.getValue();
+					updateQuestionsList(selectedItem, selected);
+				}
+			}
+		});
 		answerTextColumn.setCellValueFactory(new PropertyValueFactory<Answer, String>("value"));
 		correctAnswerColumn.setCellFactory(col -> {
 			CheckBoxTableCell<Answer, Boolean> cell = new CheckBoxTableCell<>(index -> {
@@ -266,25 +240,31 @@ public class MainWindowController extends AbstractController {
 		});
 		answerItems = FXCollections.observableArrayList(new ArrayList<>());
 		answersTable.setItems(answerItems);
-//		numberColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, Integer>("number"));
-//		wordColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("word"));
-//		translationColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("translation"));
-//		categoryColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("categories"));
-//		transCategoryColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("transCategories"));
-//		dictionaryColumn.setCellValueFactory(new PropertyValueFactory<TranslationRow, String>("dictionaries"));
 		updateQuestionsView();
-//		catOrDictSelector
-//				.setItems(FXCollections.observableArrayList(getResources().getString("filters.selection.categories"),
-//						getResources().getString("filters.selection.dictionaries")));
-//		conditionSelector.setItems(FXCollections.observableArrayList(getResources().getString("filters.selection.or"),
-//				getResources().getString("filters.selection.and")));
-//		catOrDictSelector.getSelectionModel().select(0);
-//		conditionSelector.getSelectionModel().select(0);
-////		loadCategories();
-////		statusMessage3.setText(MessageFormat.format(resources.getString("dictionary.status"),
-////				getSessionService().getDictionaries().size()));
-//		mainTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+	}
 
+	private void updateQuestionsList(TreeItem<Category> selectedItem, Category selected) {
+		if (selected != null) {
+			System.out.println("Selected Text : " + selected);
+			answerItems.clear();
+//            updateQuestionsView();
+			if (inSubChaptersCheck.isSelected()) {
+				List<Integer> ids = new ArrayList<>();
+				addSubIds(selectedItem, ids);
+				getSessionService().setQuestions(questionService.getAllByCategoryIds(ids));
+			} else {
+				getSessionService().setQuestions(questionService.getAllByCategoryId(selected.getId()));
+			}
+//    		updateTranslations();
+			updateQuestionsView();
+		}
+	}
+
+	private void addSubIds(TreeItem<Category> selectedItem, List<Integer> ids) {
+		ids.add(selectedItem.getValue().getId());
+		for (TreeItem<Category> child : selectedItem.getChildren()) {
+			addSubIds(child, ids);
+		}
 	}
 
 	private void updateCategories() {
@@ -293,17 +273,26 @@ public class MainWindowController extends AbstractController {
 	}
 
 	private void updateQuestions() {
-		questionService.loadQuestions(getSessionService().getQuestionIds());
+		TreeItem<Category> selectedChapter = chapters.getSelectionModel().getSelectedItem();
+		if (selectedChapter != null) {
+			Category selected = selectedChapter.getValue();
+			updateQuestionsList(selectedChapter, selected);
+		} else {
+			questionService.loadQuestions();
+			updateQuestionsView();
+		}
+//		questionService.loadQuestions(getSessionService().getQuestionIds());
 	}
 
 	private void updateQuestionsView() {
 		ObservableList<Question> questions = getSessionService().getQuestions();
-		updateTranslations(questions);
+		answerItems.clear();
+		updateQuestions(questions);
 //		mainTable.getSelectionModel().select(translations.size() - 1);
 //		mainTable.scrollTo(translations.size());
 	}
 
-	private void updateTranslations(ObservableList<Question> questions) {
+	private void updateQuestions(ObservableList<Question> questions) {
 //		if (getSessionService().isDisplayDefaultLanguagesOnly()) {
 //			FilteredList<TranslationRow> filtered = new FilteredList<>(translations);
 //			filtered.setPredicate(
@@ -503,10 +492,10 @@ public class MainWindowController extends AbstractController {
 		categoryEditorController.getObject().showStage(this::updateCategories);
 	}
 
-    @FXML
-    void addChapter(ActionEvent event) throws IOException {
-    	categoryEditorController.getObject().showStage(this::updateCategories);
-    }
+	@FXML
+	void addChapter(ActionEvent event) throws IOException {
+		categoryEditorController.getObject().showStage(this::updateCategories);
+	}
 
 	@FXML
 	void manageDictionaries(ActionEvent event) throws IOException {
@@ -515,7 +504,7 @@ public class MainWindowController extends AbstractController {
 
 	@FXML
 	void manageDictionaryEntries(ActionEvent event) throws IOException {
-		questionEditorController.getObject().showStage((Stage) null);
+		questionEditorController.getObject().showStage(this::updateQuestions);
 	}
 
 	@FXML
@@ -530,37 +519,6 @@ public class MainWindowController extends AbstractController {
 			TranslationRow selected = mainTable.getSelectionModel().getSelectedItem();
 //			questionEditorController.getObject().showStage(null, selected);
 		}
-	}
-
-	@FXML
-	void addToCategory(ActionEvent event) {
-		String title = getResources().getString("menu.edit.addToCategory");
-		String header = getResources().getString("category.select");
-//		checkSelectedAndExecute(getSessionService()::getCategories, this::doAddToCategory, wordService, title, header);
-	}
-
-	@FXML
-	void removeFromCategory(ActionEvent event) {
-		String title = getResources().getString("menu.edit.removeFromCategory");
-		String header = getResources().getString("category.select");
-//		checkSelectedAndExecute(getSessionService()::getCategories, this::doRemoveFromCategory, wordService, title,
-//				header);
-	}
-
-	@FXML
-	void addToDictionary(ActionEvent event) {
-		String title = getResources().getString("menu.edit.addToDictionary");
-		String header = getResources().getString("dictionary.select");
-//		checkSelectedAndExecute(getSessionService()::getDictionaries, this::doAddToDictionary, entryService, title,
-//				header);
-	}
-
-	@FXML
-	void removeFromDictionary(ActionEvent event) {
-		String title = getResources().getString("menu.edit.removeFromDictionary");
-		String header = getResources().getString("dictionary.select");
-//		checkSelectedAndExecute(getSessionService()::getDictionaries, this::doRemoveFromDictionary, entryService, title,
-//				header);
 	}
 
 	private ObservableList<TranslationRow> checkSelectedAndExecute(Supplier<ObservableList<IdString>> itemsGetter,
@@ -632,39 +590,24 @@ public class MainWindowController extends AbstractController {
 
 	@FXML
 	void removeSelected(ActionEvent event) {
-//		ObservableList<TranslationRow> selectedEntries = mainTable.getSelectionModel().getSelectedItems();
-//		if (selectedEntries.size() == 0) {
-//			showInformationAlert(getResources().getString("editor.popup.items.not.selected"));
-//		} else {
-//			List<String> deleteNames = new ArrayList<>();
-//			selectedEntries.stream().forEach(entry -> {
-//				deleteNames.add(entry.toString());
-//
-//			});
-//			Alert alert = new Alert(AlertType.CONFIRMATION,
-//					getResources().getString("editor.popup.delete") + StringUtils.join(deleteNames, "\n"),
-//					ButtonType.YES, ButtonType.NO);
-//			alert.showAndWait();
-//			if (alert.getResult() == ButtonType.YES) {
-//				List<Integer> usedWords = new ArrayList<>();
-//				entryService.getAllBySelected(selectedEntries).stream().forEach(entity -> {
-//					usedWords.add(entity.getWord().getId());
-//					usedWords.add(entity.getTranslation().getId());
-//				});
-//				entryService.deleteSelected(selectedEntries);
-//
-//				for (Word word : wordService.getAllByIds(usedWords)) {
-//					if (entryService.getWordUsages(word) == 0) {
-//						wordService.delete(word);
-//					} else {
-//						getSessionService().decreaseUsages(word.getId());
-//					}
-//				}
-//
-//				entryService.loadTranslations(getSessionService().getTranslationIds());
-//				updateTranslationsView();
-//			}
-//		}
+		ObservableList<Question> selectedEntries = questionsList.getSelectionModel().getSelectedItems();
+		if (selectedEntries.size() == 0) {
+			showInformationAlert(getResources().getString("editor.popup.items.not.selected"));
+		} else {
+			List<String> deleteNames = new ArrayList<>();
+			selectedEntries.stream().forEach(entry -> {
+				deleteNames.add(entry.toString());
+
+			});
+			Alert alert = new Alert(AlertType.CONFIRMATION,
+					getResources().getString("editor.popup.delete") + StringUtils.join(deleteNames, "\n"),
+					ButtonType.YES, ButtonType.NO);
+			alert.showAndWait();
+			if (alert.getResult() == ButtonType.YES) {
+				questionService.deleteSelected(selectedEntries);
+				updateQuestions();
+			}
+		}
 	}
 
 	@FXML
@@ -792,26 +735,9 @@ public class MainWindowController extends AbstractController {
 
 	@FXML
 	void reloadQuestions(ActionEvent event) {
-		questionService.loadQuestions(getSessionService().getQuestionIds());
-	}
-
-	@FXML
-	void doEditTranslationWord(ActionEvent event) throws IOException {
-		TranslationRow selected = mainTable.getSelectionModel().getSelectedItem();
-//		wordEditorController.getObject().showStage(null, wordService.getDataById(selected.getTranslationId()));
-	}
-
-	@FXML
-	void doEidtWord(ActionEvent event) throws IOException {
-//		TranslationRow selected = mainTable.getSelectionModel().getSelectedItem();
-//		wordEditorController.getObject().showStage(null, wordService.getDataById(selected.getWordId()));
-	}
-
-	@FXML
-	void doSpeakWord(ActionEvent event) {
-		TranslationRow selected = mainTable.getSelectionModel().getSelectedItem();
-		WordSpeakService speakSevice = new WordSpeakService(selected.getWord(), selected.getWordLangCode());
-		speakSevice.start();
+		chapters.getSelectionModel().clearSelection();
+		questionService.loadQuestions();
+//		questionService.loadQuestions(getSessionService().getQuestionIds());
 	}
 
 	@FXML
