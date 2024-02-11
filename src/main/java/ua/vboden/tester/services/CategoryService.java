@@ -49,7 +49,7 @@ public class CategoryService implements EntityService<IdString, Category> {
 			categories.add(new IdString(entry.getId(), entry.getName()));
 			entities.add(entry);
 		});
-		if(entities.isEmpty()) {
+		if (entities.isEmpty()) {
 			ResourceBundle resources = ResourceBundle.getBundle("bundles/localization");
 			Category entity = new Category();
 			entity.setName(resources.getString("theme.all"));
@@ -58,6 +58,7 @@ public class CategoryService implements EntityService<IdString, Category> {
 			categories.add(new IdString(entity.getId(), entity.getName()));
 		}
 		Collections.sort(categories);
+		Collections.sort(entities, (a, b) -> a.getName().compareTo(b.getName()));
 		sessionService.setCategories(categories);
 		sessionService.setCategoryModels(entities);
 	}
@@ -76,6 +77,5 @@ public class CategoryService implements EntityService<IdString, Category> {
 	public Category findEntityByName(String name) {
 		return categoryRepository.findByName(name);
 	}
-
 
 }

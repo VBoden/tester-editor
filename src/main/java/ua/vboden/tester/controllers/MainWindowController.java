@@ -96,7 +96,7 @@ public class MainWindowController extends AbstractController {
 	private TextField findWordField;
 
 	@FXML
-	private CheckBox inTranslationsCheck;
+	private CheckBox inSubChaptersCheck;
 
 	@FXML
 	private Button filterButton;
@@ -231,11 +231,13 @@ public class MainWindowController extends AbstractController {
 					System.out.println("Selected Text : " + selected);
 					answerItems.clear();
 //		            updateQuestionsView();
-					List<Integer> ids = new ArrayList<>();
-					ids.add(selected.getId());
-					addSubIds(selectedItem, ids);
-					getSessionService().setQuestions(questionService.getAllByCategoryIds(ids));
-//					getSessionService().setQuestions(questionService.getAllByCategoryId(selected.getId()));
+					if (inSubChaptersCheck.isSelected()) {
+						List<Integer> ids = new ArrayList<>();
+						addSubIds(selectedItem, ids);
+						getSessionService().setQuestions(questionService.getAllByCategoryIds(ids));
+					} else {
+						getSessionService().setQuestions(questionService.getAllByCategoryId(selected.getId()));
+					}
 //		    		updateTranslations();
 					updateQuestionsView();
 				}
@@ -488,7 +490,7 @@ public class MainWindowController extends AbstractController {
 
 	private Function<TranslationRow, String> getSearchFiledGetter() {
 		Function<TranslationRow, String> getter;
-		if (inTranslationsCheck.isSelected()) {
+		if (inSubChaptersCheck.isSelected()) {
 			getter = TranslationRow::getTranslation;
 		} else {
 			getter = TranslationRow::getWord;
@@ -500,6 +502,11 @@ public class MainWindowController extends AbstractController {
 	void manageCategories(ActionEvent event) throws IOException {
 		categoryEditorController.getObject().showStage(this::updateCategories);
 	}
+
+    @FXML
+    void addChapter(ActionEvent event) throws IOException {
+    	categoryEditorController.getObject().showStage(this::updateCategories);
+    }
 
 	@FXML
 	void manageDictionaries(ActionEvent event) throws IOException {

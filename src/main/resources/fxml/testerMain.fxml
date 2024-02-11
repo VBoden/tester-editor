@@ -63,9 +63,9 @@
       <menus>
         <Menu mnemonicParsing="false" text="%menu.file">
           <items>
-                  <MenuItem mnemonicParsing="false" onAction="#exportEntriesToJson" text="%menu.file.export" />
-                  <MenuItem mnemonicParsing="false" onAction="#importEntriesFromJson" text="%menu.file.import.json" />
-                  <Menu mnemonicParsing="false" text="%menu.file.dictionaryFiles">
+                  <MenuItem mnemonicParsing="false" onAction="#exportEntriesToJson" text="%menu.file.export" visible="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#importEntriesFromJson" text="%menu.file.import.json" visible="false" />
+                  <Menu mnemonicParsing="false" text="%menu.file.dictionaryFiles" visible="false">
                     <items>
                         <MenuItem mnemonicParsing="false" onAction="#exportEntries" text="%menu.file.export" />
                         <MenuItem mnemonicParsing="false" onAction="#exportEntriesAllCategories" text="%menu.file.export.all.categories" />
@@ -93,14 +93,15 @@
         <Menu mnemonicParsing="false" text="%menu.edit">
           <items>
             <MenuItem fx:id="menuManageDictionaryEntries" mnemonicParsing="false" onAction="#manageDictionaryEntries" text="%menu.edit.dictionaryEntries" />
+            <MenuItem fx:id="menuManageCategories" mnemonicParsing="false" onAction="#manageCategories" text="%menu.manage.categories" />
             <MenuItem mnemonicParsing="false" text="Unselect All" visible="false" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#addToCategory" text="%menu.edit.addToCategory" />
-                  <MenuItem mnemonicParsing="false" onAction="#addToDictionary" text="%menu.edit.addToDictionary" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
-                  <MenuItem mnemonicParsing="false" onAction="#removeFromCategory" text="%menu.edit.removeFromCategory" />
-                  <MenuItem mnemonicParsing="false" onAction="#removeFromDictionary" text="%menu.edit.removeFromDictionary" />
-                  <SeparatorMenuItem mnemonicParsing="false" />
+            <SeparatorMenuItem mnemonicParsing="false" visible="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#addToCategory" text="%menu.edit.addToCategory" visible="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#addToDictionary" text="%menu.edit.addToDictionary" visible="false" />
+                  <SeparatorMenuItem mnemonicParsing="false" visible="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#removeFromCategory" text="%menu.edit.removeFromCategory" visible="false" />
+                  <MenuItem mnemonicParsing="false" onAction="#removeFromDictionary" text="%menu.edit.removeFromDictionary" visible="false" />
+                  <SeparatorMenuItem mnemonicParsing="false" visible="false" />
             <MenuItem mnemonicParsing="false" onAction="#removeSelected" text="%menu.edit.delete" />
             <MenuItem mnemonicParsing="false" text="Undo" visible="false" />
             <MenuItem mnemonicParsing="false" text="Redo" visible="false" />
@@ -110,13 +111,12 @@
             <MenuItem mnemonicParsing="false" text="Paste" visible="false" />
           </items>
         </Menu>
-            <Menu mnemonicParsing="false" text="%menu.manage">
+            <Menu mnemonicParsing="false" text="%menu.manage" visible="false">
               <items>
-            <MenuItem fx:id="menuManageDictionaries" mnemonicParsing="false" onAction="#manageDictionaries" text="%menu.manage.dictionaries" />
-            <MenuItem fx:id="menuManageCategories" mnemonicParsing="false" onAction="#manageCategories" text="%menu.manage.categories" />
+            <MenuItem fx:id="menuManageDictionaries" mnemonicParsing="false" onAction="#manageDictionaries" text="%menu.manage.dictionaries" visible="false" />
               </items>
             </Menu>
-        <Menu mnemonicParsing="false" text="%menu.help">
+        <Menu mnemonicParsing="false" text="%menu.help" visible="false">
           <items>
             <MenuItem mnemonicParsing="false" onAction="#showAboutProgram" text="%menu.help.about" />
           </items>
@@ -150,7 +150,7 @@
                </tooltip>
             </Button>
             <Separator orientation="VERTICAL" prefHeight="15.0" />
-          <Button contentDisplay="GRAPHIC_ONLY" maxHeight="24.0" maxWidth="24.0" minHeight="24.0" minWidth="24.0" mnemonicParsing="false" onAction="#addToCategory" prefHeight="24.0" prefWidth="24.0">
+          <Button contentDisplay="GRAPHIC_ONLY" maxHeight="24.0" maxWidth="24.0" minHeight="24.0" minWidth="24.0" mnemonicParsing="false" onAction="#addChapter" prefHeight="24.0" prefWidth="24.0">
                <graphic>
                   <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -161,44 +161,6 @@
                <tooltip>
                   <Tooltip text="%menu.edit.addToCategory" />
                </tooltip></Button>
-            <Button contentDisplay="GRAPHIC_ONLY" maxHeight="24.0" maxWidth="24.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#removeFromCategory" prefHeight="24.0" prefWidth="24.0">
-               <graphic>
-                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../img/catRemove.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-               <tooltip>
-                  <Tooltip text="%menu.edit.removeFromCategory" />
-               </tooltip>
-            </Button>
-            <Separator orientation="VERTICAL" prefHeight="15.0" />
-            <Button contentDisplay="GRAPHIC_ONLY" maxHeight="24.0" maxWidth="24.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#addToDictionary" prefHeight="24.0" prefWidth="24.0">
-               <graphic>
-                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../img/dict-add.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-               <tooltip>
-                  <Tooltip text="%menu.edit.addToDictionary" />
-               </tooltip>
-            </Button>
-            <Button contentDisplay="GRAPHIC_ONLY" maxHeight="24.0" maxWidth="24.0" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#removeFromDictionary" prefHeight="24.0" prefWidth="24.0">
-               <graphic>
-                  <ImageView fitHeight="24.0" fitWidth="24.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../img/dict-remove.png" />
-                     </image>
-                  </ImageView>
-               </graphic>
-               <tooltip>
-                  <Tooltip text="%menu.edit.removeFromDictionary" />
-               </tooltip>
-            </Button>
-            <Separator orientation="VERTICAL" prefHeight="15.0" />
         </items>
       </ToolBar>
       <SplitPane dividerPositions="0.29768467475192945" VBox.vgrow="ALWAYS">
@@ -213,6 +175,11 @@
                <children>
                   <HBox prefHeight="37.0" prefWidth="189.0" spacing="5.0">
                      <children>
+                        <CheckBox fx:id="inSubChaptersCheck" layoutY="5.0" mnemonicParsing="false" selected="true" text="%display.in.subchapters" HBox.hgrow="NEVER">
+                           <padding>
+                              <Insets top="3.0" />
+                           </padding>
+                        </CheckBox>
                         <Button mnemonicParsing="false" onAction="#reloadQuestions">
                            <graphic>
                               <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">
@@ -237,11 +204,6 @@
                            </graphic>
                         </ToggleButton>
                         <TextField fx:id="findWordField" onKeyPressed="#findWordsEnter" prefHeight="24.0" prefWidth="171.0" />
-                        <CheckBox fx:id="inTranslationsCheck" layoutY="5.0" mnemonicParsing="false" text="%search.in.translations" HBox.hgrow="NEVER">
-                           <padding>
-                              <Insets top="3.0" />
-                           </padding>
-                        </CheckBox>
                         <Button mnemonicParsing="false" onAction="#goPrevious">
                            <graphic>
                               <ImageView fitHeight="16.0" fitWidth="16.0" pickOnBounds="true" preserveRatio="true">

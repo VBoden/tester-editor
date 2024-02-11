@@ -25,8 +25,6 @@ public class SessionService {
 
 	private List<Integer> questionIds;
 
-	private ObservableList<CodeString> languages;
-
 	private ObservableList<WordData> words;
 
 	private ObservableList<IdString> categories;
@@ -153,14 +151,6 @@ public class SessionService {
 
 	public void setDictionaryData(List<DictionaryData> dictionaryData) {
 		this.dictionaryData = FXCollections.observableArrayList(dictionaryData);
-	}
-
-	public ObservableList<CodeString> getLanguages() {
-		return languages;
-	}
-
-	public void setLanguages(List<CodeString> languages) {
-		this.languages = FXCollections.observableArrayList(languages);
 	}
 
 	public ObservableList<WordData> getWords() {

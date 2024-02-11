@@ -6,7 +6,6 @@ import java.util.ResourceBundle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
@@ -48,21 +47,13 @@ public class PrefsEditorController extends AbstractController {
 		initView();
 	}
 
-	private void initView() {
-		ObservableList<CodeString> languages = getSessionService().getLanguages();
-		languageFrom.setItems(languages);
-		languageFrom.getSelectionModel().select(getSessionService().getDefaultLanguageFrom());
-		languageTo.setItems(languages);
-		languageTo.getSelectionModel().select(getSessionService().getDefaultLanguageTo());
-		displayDefaultsOnlyCheck.setSelected(sessionService.isDisplayDefaultLanguagesOnly());
+	private void initView() {		
 		autoLoadLastSelectedDb.setSelected(sessionService.isAutoLoadLastSelectedDb());
-		useDefaultCheck.setSelected(sessionService.isFillDefaultLanguages());
-		showTranscription.setSelected(sessionService.isShowTranscription());
 	}
 
 	@Override
 	String getFXML() {
-		return "/fxml/prefsEditor.fxml";
+		return "/fxml/testerPrefsEditor.fxml";
 	}
 
 	@Override
@@ -77,12 +68,7 @@ public class PrefsEditorController extends AbstractController {
 
 	@FXML
 	void onSave(ActionEvent event) {
-		preferencesService.saveLangugeFrom(languageFrom.getSelectionModel().getSelectedItem());
-		preferencesService.saveLanguageTo(languageTo.getSelectionModel().getSelectedItem());
-		preferencesService.saveFillDefaultLanguage(useDefaultCheck.isSelected());
-		preferencesService.saveShowDefaultLanguagesOnly(displayDefaultsOnlyCheck.isSelected());
 		preferencesService.saveAutoLoadLastSelectedDb(autoLoadLastSelectedDb.isSelected());
-		preferencesService.saveShowTranscription(showTranscription.isSelected());
 		getStage().close();
 	}
 
